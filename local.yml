@@ -1,0 +1,18 @@
+---
+- name: peter
+  hosts: peter.crashbox.io
+  tasks:
+    - name: test
+      shell: echo "run by peter"
+  
+- name: test
+  hosts: 7c2b258159ab
+  tasks:
+    - name: test
+      shell: echo "run by container"
+
+- name: test2
+  hosts: all
+  tasks:
+    - name: test
+      shell: echo "run by all"

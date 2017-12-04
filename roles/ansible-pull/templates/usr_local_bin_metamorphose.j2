@@ -1,0 +1,13 @@
+#!/bin/sh
+# Pull ansible configuration and upgrade system
+set -e
+
+workdir=/var/lib/ansible/local
+
+mkdir --parents "$workdir"
+/usr/bin/ansible-pull \
+    --verify-commit \
+    --checkout master \
+    --sleep 10 \
+    --directory "$workdir" \
+    --url "https://github.com/jodersky/metamorphic.git"

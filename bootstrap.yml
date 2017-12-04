@@ -1,0 +1,8 @@
+# This playbook bootstraps hosts to run ansible-pull.
+#
+# Adapted from  https://github.com/ansible/ansible-examples/blob/master/language_features/ansible_pull.yml
+---
+- hosts: pull_mode_hosts
+  remote_user: root
+  roles:
+    - ansible-pull

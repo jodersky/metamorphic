@@ -1,8 +1,0 @@
----
-- name: crashbox
-  become: true
-  hosts: peter.crashbox.io
-  remote_user: root
-  roles:
-    - common
-    - webserver

@@ -1,0 +1,27 @@
+---
+- name: install ansible
+  apt: name=ansible state=latest
+
+- name: install gnupg
+  apt: name=gpg state=latest
+
+- name: install git
+  apt: name=git state=latest
+
+- name: create ansible pull script
+  template:
+    src=templates/usr_local_bin_metamorphose.j2
+    dest=/usr/local/bin/metamorphose
+    owner=root group=root mode=0755
+
+- name: create crontab entry to clone/pull git repository
+  template:
+    src=templates/etc_cron.d_metamorphosis.j2
+    dest=/etc/cron.d/metamorphosis
+    owner=root group=root mode=0644
+
+- name: create logrotate entry for metamorphose.log
+  template:
+    src=templates/etc_logrotate.d_metamorphosis.j2
+    dest=/etc/logrotate.d/metamorphosis
+    owner=root group=root mode=0644
