@@ -4,5 +4,5 @@
   hosts: peter.crashbox.io
   remote_user: root
   roles:
-    - openvpn
+    - common
     - webserver
