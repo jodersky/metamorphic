@@ -1,0 +1,30 @@
+---
+- name: install nginx
+  apt: name=nginx state=latest
+
+- name: disable default nginx site
+  file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: remove default nginx site
+  file: path=/etc/nginx/sites-available/default state=absent
+  
+- name: copy website config
+  copy: src={{item}} dest=/etc/nginx/sites-available/{{item}}
+  with_items:
+    - default.conf
+    - homepage.conf
+
+- name: activate website config
+  file:
+    src=/etc/nginx/sites-available/{{item}}
+    dest=/etc/nginx/sites-enabled/{{item}}
+    state=link
+  with_items:
+    - default.conf
+    - homepage.conf
+
+- name: firewall - allow http traffic
+  ufw: rule=allow port=80 proto=tcp
+
+- name: firewall - allow https traffic
+  ufw: rule=allow port=443 proto=tcp

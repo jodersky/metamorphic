@@ -1,0 +1,17 @@
+---
+- name: install rsnapshot
+  apt: name=rsnapshot state=latest
+
+- name: create config directory
+  file: path=/etc/rsnapshot.d state=directory mode=0755
+  
+- name: copy parent configuration
+  copy: src=rsnapshot.conf dest=/etc/rsnapshot.conf force=true
+    
+- name: copy child configurations
+  template: src=linux.conf.j2 dest="/etc/rsnapshot.d/{{host}}.conf"
+  vars:
+    host: "{{item}}"
+  with_items:
+    - muninn
+    - jodersky-mbp

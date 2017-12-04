@@ -1,0 +1,2 @@
+---
+ddns_api_key: "{{vault_ddns_api_key}}"

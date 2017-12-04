@@ -1,0 +1,12 @@
+[Unit]
+Description=APT archive management
+
+[Service]
+User=mini-dinstall
+Group=mini-dinstall
+Type=forking
+ExecStart=/usr/bin/mini-dinstall
+PIDFile=/srv/dl/debian/mini-dinstall/mini-dinstall.lock
+
+[Install]
+WantedBy=multi-user.target

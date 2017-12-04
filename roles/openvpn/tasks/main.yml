@@ -1,0 +1,56 @@
+---
+- name: install openvpn
+  apt: name=openvpn state=latest
+  
+- name: copy root certificate
+  copy: src=ca.crt dest=/etc/openvpn/ca.crt
+  notify: restart openvpn
+  
+- name: copy dh parameters
+  copy: src=dh4096.pem dest=/etc/openvpn/dh4096.pem
+  notify: restart openvpn
+
+- name: copy server config
+  copy: src=server.conf dest=/etc/openvpn/server.conf
+  notify: restart openvpn
+
+- name: copy crl
+  copy: src=crl.pem dest=/etc/openvpn/crl.pem
+  notify: restart openvpn # restart to terminate all connections and enforce crl
+  
+- name: copy server certificate
+  copy:
+    src="host_files/{{inventory_hostname}}/etc/openvpn/server.crt"
+    dest=/etc/openvpn/server.crt
+  notify: restart openvpn
+
+- name: copy server key
+  copy:
+    src="host_files/{{inventory_hostname}}/etc/openvpn/server.key"
+    dest=/etc/openvpn/server.key
+    mode=0600
+  notify: restart openvpn
+
+- name: enable ip forwarding
+  sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+
+- name: firewall - update default forward policy
+  lineinfile: dest=/etc/default/ufw regexp=^DEFAULT_FORWARD_POLICY line=DEFAULT_FORWARD_POLICY="ACCEPT"
+  notify: restart ufw
+  
+- name: firewall - add NAT rules
+  blockinfile:
+    dest: /etc/ufw/before.rules
+    insertbefore: BOF
+    block: |
+      # NAT table rules
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      # Allow traffic from OpenVPN client to eth0
+      -A POSTROUTING -s 192.168.255.0/24 -o eth0 -j MASQUERADE
+      COMMIT
+  notify: restart ufw
+    
+- name: firewall - allow openvpn
+  ufw: rule=allow port=1194 proto=udp
+  notify: restart ufw
